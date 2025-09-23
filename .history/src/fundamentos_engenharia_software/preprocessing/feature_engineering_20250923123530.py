@@ -73,3 +73,8 @@ def create_features():
     df_with_doc_columns = create_document_columns(df_with_contries_grouped)
 
     df_with_doc_columns.to_csv(PROCESSED_DATA_PATH, index=False)
+
+    print (df_with_doc_columns.head())
+
+if __name__ == "__main__":
+    create_features()

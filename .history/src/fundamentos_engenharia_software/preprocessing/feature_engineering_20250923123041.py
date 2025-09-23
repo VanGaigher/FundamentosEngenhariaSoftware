@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 RAW_DATA_PATH = r"C:\Users\vanes\Documents\02-Estudos\FundamentosEngenhariaSoftware\data\dados.xlsx"
-PROCESSED_DATA_PATH = r"C:\Users\vanes\Documents\02-Estudos\FundamentosEngenhariaSoftware\data\dados_com_features.csv"
+
 def create_cumulative_fraud_percentage(df):
     df_copy= df.copy()
 
@@ -43,7 +43,7 @@ def group_countries (df, countries_to_keep = ['BR', 'AR']):
     df_copy = df.copy()
     df_copy['paises_agrupados'] = np.where(df_copy['pais'].isin(countries_to_keep), df_copy['pais'], 'Outros')
 
-    return df_copy
+    return df_copy()
 
 def create_document_columns(df):
     df_copy = df.copy()
@@ -69,7 +69,9 @@ def create_features():
     # fazer agrupamento dos países menos frequentes
     df_with_contries_grouped = group_countries(df_with_other_categories, countries_to_keep=['BR', 'AR'])
 
-    # criar coluna com indicador de entrega de documentos
     df_with_doc_columns = create_document_columns(df_with_contries_grouped)
 
-    df_with_doc_columns.to_csv(PROCESSED_DATA_PATH, index=False)
+    print (df_with_doc_columns.head())
+
+if __name__ == "__main__":
+    create_features()
