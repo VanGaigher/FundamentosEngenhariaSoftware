@@ -1,7 +1,3 @@
-"""
-Módulo para engenharia de features.
-"""
-
 import pandas as pd
 import numpy as np
 
@@ -12,9 +8,6 @@ PROCESSED_DATA_PATH = r"C:\Users\vanes\Documents\02-Estudos\FundamentosEngenhari
 
 
 def create_cumulative_fraud_percentage(df):
-    """
-    Função para criar a coluna de percentage acumulada de fraude por categoria de produto.
-    """
     df_copy = df.copy()
 
     item_cat = df_copy.categoria_produto.value_counts().reset_index()
@@ -35,14 +28,11 @@ def create_cumulative_fraud_percentage(df):
 
 
 def extract_least_frequent_categories(df, percentage_cutoff=80, top_n=685):
-    """
-    Função para extrair a lista de categorias menos frequentes.
-    """
     df_copy = df.copy()
 
-    df_copy["reaches_80"] = df_copy["percent_cumsum_fraude"] <= percentage_cutoff
+    df_copy["reaches_80"] = df_copy["percent_cumsum_fraude"] <= 80
 
-    produtos_categorias = df_copy[top_n:]
+    produtos_categorias = df_copy[685:]
 
     lista_categorias_outros = produtos_categorias.categoria_produto.to_list()
 
@@ -50,9 +40,6 @@ def extract_least_frequent_categories(df, percentage_cutoff=80, top_n=685):
 
 
 def create_other_category_values(df, lista_categoria_outros):
-    """
-    Função para criar os valores da categoria 'outros'.
-    """
     df_copy = df.copy()
 
     df_copy["grupo_categorias"] = df_copy["categoria_produto"]
@@ -65,9 +52,6 @@ def create_other_category_values(df, lista_categoria_outros):
 
 
 def group_countries(df, countries_to_keep=["BR", "AR"]):
-    """
-    Função para agrupar países em uma categoria 'Outros'.
-    """
     df_copy = df.copy()
     df_copy["paises_agrupados"] = np.where(
         df_copy["pais"].isin(countries_to_keep), df_copy["pais"], "Outros"
@@ -77,9 +61,6 @@ def group_countries(df, countries_to_keep=["BR", "AR"]):
 
 
 def create_document_columns(df):
-    """
-    Função para criar colunas de indicadores de entrega de documentos.
-    """
     df_copy = df.copy()
 
     df_copy["entrega_doc_2_nan"] = np.where(df_copy["entrega_doc_2"].isnull(), 1, 0)
@@ -93,9 +74,6 @@ def create_document_columns(df):
 
 
 def create_features():
-    """
-    Função para criar novas features a partir dos dados brutos.
-    """
     df = pd.read_excel(RAW_DATA_PATH)
 
     # Calcular a percentage acumulada

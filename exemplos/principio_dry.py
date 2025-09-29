@@ -15,7 +15,7 @@ data_treino = {
         "eletrônicos",
         "brinquedos",
         "moda",
-        "esportes"
+        "esportes",
     ],
     "valor": [1200, 150, 300, 4500, 45, 200, 800, 90, 250, 500],
 }
@@ -32,18 +32,22 @@ df_inferencia = pd.DataFrame(data_inferencia)
 
 # EXEMPLO DE CÓDIGO REPETIDO COM VIOLAÇÃO DO DRY
 contagem_categorias = df_treino["categoria_produto"].value_counts()
-categoria_raras = contagem_categorias[contagem_categorias>2].index.tolist()
+categoria_raras = contagem_categorias[contagem_categorias > 2].index.tolist()
 print(f"categorias raras identificadas no treino:{categoria_raras}")
 
 df_treino_processado_v1 = df_treino.copy()
-df_treino_processado_v1["grupo_categorias"] = df_treino_processado_v1["categoria_produto"]
+df_treino_processado_v1["grupo_categorias"] = df_treino_processado_v1[
+    "categoria_produto"
+]
 df_treino_processado_v1.loc[
     df_treino_processado_v1["grupo_categorias"].isin(categoria_raras),
     "grupo_categorias",
 ] = "outras_categorias"
 
 df_inferencia_processado_v1 = df_inferencia.copy()
-df_inferencia_processado_v1["grupo_categorias"] = df_inferencia_processado_v1["categoria_produto"]
+df_inferencia_processado_v1["grupo_categorias"] = df_inferencia_processado_v1[
+    "categoria_produto"
+]
 df_inferencia_processado_v1.loc[
     df_inferencia_processado_v1["grupo_categorias"].isin(categoria_raras),
     "grupo_categorias",
@@ -52,8 +56,9 @@ df_inferencia_processado_v1.loc[
 
 # EXEMPLO DE CÓDIGO SEGUINDO O PRINCÍPIO DRY
 
+
 def agrupar_categorias_raras(
-        df: pd.DataFrame, lista_categorias_raras: list
+    df: pd.DataFrame, lista_categorias_raras: list
 ) -> pd.DataFrame:
     df_processado = df.copy()
     df_processado["grupo_categorias"] = df_processado["categoria_produto"]
@@ -64,6 +69,7 @@ def agrupar_categorias_raras(
 
     return df_processado
 
-df_treino_processado_v2= agrupar_categorias_raras(df_treino, categoria_raras)
+
+df_treino_processado_v2 = agrupar_categorias_raras(df_treino, categoria_raras)
 
 df_inferencia_processado_v2 = agrupar_categorias_raras(df_inferencia, categoria_raras)

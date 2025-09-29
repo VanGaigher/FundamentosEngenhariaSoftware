@@ -42,7 +42,7 @@ def extract_least_frequent_categories(df, percentage_cutoff=80, top_n=685):
 
     df_copy["reaches_80"] = df_copy["percent_cumsum_fraude"] <= percentage_cutoff
 
-    produtos_categorias = df_copy[top_n:]
+    produtos_categorias = df_copy[685:]
 
     lista_categorias_outros = produtos_categorias.categoria_produto.to_list()
 
