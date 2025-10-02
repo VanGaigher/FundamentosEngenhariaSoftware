@@ -72,4 +72,6 @@ def agrupar_categorias_raras(
 
 df_treino_processado_v2 = agrupar_categorias_raras(df_treino, categoria_raras)
 
-df_inferencia_processado_v2 = agrupar_categorias_raras(df_inferencia, categoria_raras)
+df_inferencia_processado_v2 = agrupar_categorias_raras(
+    df_inferencia, categoria_raras
+)
