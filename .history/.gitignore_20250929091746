@@ -1,0 +1,8 @@
+*.pyc
+
+data/
+
+poetry.lock
+
+.history/*
+__pycache__/

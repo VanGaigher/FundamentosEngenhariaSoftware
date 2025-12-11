@@ -1,0 +1,60 @@
+[project]
+name = "fundamentos_engenhariasoftware"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "optuna (>=4.5.0,<5.0.0)",
+    "pandas (>=2.3.2,<3.0.0)",
+    "numpy (>=2.3.3,<3.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "matplotlib (>=3.10.6,<4.0.0)",
+    "scikit-learn (>=1.7.2,<2.0.0)",
+    "imbalanced-learn (>=0.14.0,<0.15.0)",
+    "scikit-optimize (>=0.10.2,<0.11.0)",
+    "ipykernel (>=6.30.1,<7.0.0)",
+    "missingno (>=0.5.2,<0.6.0)",
+    "openpyxl (>=3.1.5,<4.0.0)",
+    "requests (>=2.32.5,<3.0.0)",
+    "pylint (>=3.3.8,<4.0.0)",
+    "black[jupyter] (>=25.9.0,<26.0.0)",
+    "nbformat (>=5.10.4,<6.0.0)",
+    "pytest (>=9.0.2,<10.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+
+[tool.pylint.master]
+init-hook = "import sys, os; sys.path.append(os.path.abspath('src'))"
+
+[tool.pylint.basic]
+good-names = [
+    "X",
+    "y",
+    "df",
+    "X_train",
+    "X_test",
+    "y_train",
+    "y_test",
+    "X_train_scaled",
+    "X_test_scaled",
+    "y_pred",
+    "X_train_num",
+    "X_test_num",
+    "X_train_imputed",
+    "X_test_imputed",
+    "X_train_copy",
+    "X_test_copy",
+    "X_train_top"
+]
+
