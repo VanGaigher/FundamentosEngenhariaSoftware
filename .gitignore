@@ -174,3 +174,29 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+# History and backup files
+.history/
+*.bak
+*.old
+
+# Data
+data/
+artifacts/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+.venv
+
+# Poetry
+poetry.lock
+
+# IDEs
+.vscode/
+.idea/
+
