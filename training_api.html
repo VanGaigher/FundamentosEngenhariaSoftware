@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Módulo de Treinamento do Modelo &#8212; Fundamentos de Engenharia de Software  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=8946c2f5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Módulo de Avaliação de Modelo" href="evaluation_api.html" />
+    <link rel="prev" title="Módulo de Pré-Processamento" href="preprocessing_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="modulo-de-treinamento-do-modelo">
+<span id="training-api"></span><h1>Módulo de Treinamento do Modelo<a class="headerlink" href="#modulo-de-treinamento-do-modelo" title="Link to this heading">¶</a></h1>
+<p>Esta seção detalha os componentes responsáveis pelo treinamento do modelo.</p>
+<section id="module-fundamentos_engenharia_software.training.modeling">
+<span id="treinamento"></span><h2>Treinamento<a class="headerlink" href="#module-fundamentos_engenharia_software.training.modeling" title="Link to this heading">¶</a></h2>
+<p>Módulo responsável pelo treinamento do modelo de classificação.</p>
+<p>Este módulo carrega os dados de treino já pré-processados, seleciona as
+principais variáveis preditoras definidas em <code class="docutils literal notranslate"><span class="pre">TOP_FEATURES</span></code> e treina um
+modelo de Árvore de Decisão com hiperparâmetros fixos. Após o ajuste, o
+modelo treinado é serializado e salvo em disco para uso posterior na
+etapa de avaliação.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.training.modeling.train_model">
+<span class="sig-prename descclassname"><span class="pre">fundamentos_engenharia_software.training.modeling.</span></span><span class="sig-name descname"><span class="pre">train_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_train_imputed_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.training.modeling.train_model" title="Link to this definition">¶</a></dt>
+<dd><p>Treina um modelo de Árvore de Decisão e salva o artefato resultante.</p>
+<p>O processo envolve:</p>
+<ul class="simple">
+<li><p>carregar os conjuntos de treino (features e target);</p></li>
+<li><p>selecionar as variáveis definidas em <code class="docutils literal notranslate"><span class="pre">TOP_FEATURES</span></code>;</p></li>
+<li><p>instanciar o classificador com hiperparâmetros pré-definidos;</p></li>
+<li><p>ajustar o modelo aos dados;</p></li>
+<li><p>serializar o modelo treinado e salvá-lo em <code class="docutils literal notranslate"><span class="pre">model_path</span></code>.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train_imputed_data_path</strong> (<em>str</em>) – Caminho para o arquivo CSV contendo as features de treino já imputadas.</p></li>
+<li><p><strong>y_train_data_path</strong> (<em>str</em>) – Caminho para o arquivo CSV contendo a variável target de treino.</p></li>
+<li><p><strong>model_path</strong> (<em>str</em>) – Caminho onde o artefato do modelo treinado será salvo (formato <code class="docutils literal notranslate"><span class="pre">.joblib</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – Caso algum dos arquivos de treino não seja encontrado.</p></li>
+<li><p><strong>Exception</strong> – Para quaisquer erros inesperados durante o processo de treinamento.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>. O modelo é persistido em disco.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Fundamentos de Engenharia de Software</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="preprocessing_api.html">Módulo de Pré-Processamento</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Módulo de Treinamento do Modelo</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-fundamentos_engenharia_software.training.modeling">Treinamento</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation_api.html">Módulo de Avaliação de Modelo</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="preprocessing_api.html" title="previous chapter">Módulo de Pré-Processamento</a></li>
+      <li>Next: <a href="evaluation_api.html" title="next chapter">Módulo de Avaliação de Modelo</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Vanessa Gaigher.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/training_api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

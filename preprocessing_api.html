@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Módulo de Pré-Processamento &#8212; Fundamentos de Engenharia de Software  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=8946c2f5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Módulo de Treinamento do Modelo" href="training_api.html" />
+    <link rel="prev" title="Fundamentos de Engenharia de Software documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="modulo-de-pre-processamento">
+<span id="preprocessing-api"></span><h1>Módulo de Pré-Processamento<a class="headerlink" href="#modulo-de-pre-processamento" title="Link to this heading">¶</a></h1>
+<p>Esta seção detalha os componentes responsábeis pela preparação e transformação dos dados.</p>
+<section id="module-fundamentos_engenharia_software.preprocessing.feature_engineering">
+<span id="engenharia-de-features"></span><h2>Engenharia de Features<a class="headerlink" href="#module-fundamentos_engenharia_software.preprocessing.feature_engineering" title="Link to this heading">¶</a></h2>
+<p>Módulo de engenharia de features para o pipeline de detecção de fraudes.</p>
+<p>Este módulo implementa um pipeline de pré-processamento de dados utilizando
+classes que seguem o padrão do scikit-learn (<cite>BaseEstimator</cite>, <cite>TransformerMixin</cite>).
+Cada classe representa uma etapa específica da transformação de dados, como
+agrupamento de categorias, tratamento de países e codificação de variáveis.</p>
+<p>A classe principal, <cite>FeatureEngineer</cite>, orquestra a execução de um pipeline
+sequencial que aplica todas as transformações, lendo os dados brutos e
+salvando o resultado processado.</p>
+<p>Classes de Transformação:</p>
+<ul class="simple">
+<li><p>CategoryGrouper: Agrupa categorias de produtos com baixa representatividade
+em uma única categoria “outros”.</p></li>
+<li><p>CountryGrouper: Agrupa países menos relevantes em uma categoria “Outros”.</p></li>
+<li><p>DocumentFeatureCreator: Cria novas features binárias baseadas na entrega
+de documentos.</p></li>
+<li><p>ColumnEncoder: Codifica colunas categóricas para valores numéricos usando
+LabelEncoder.</p></li>
+</ul>
+<p>Orquestrador:</p>
+<ul class="simple">
+<li><p>FeatureEngineer: Gerencia a leitura, processamento via pipeline e salvamento
+dos dados.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.CategoryGrouper">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fundamentos_engenharia_software.preprocessing.feature_engineering.</span></span><span class="sig-name descname"><span class="pre">CategoryGrouper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percentage_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">685</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.CategoryGrouper" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></p>
+<p>Agrupa categorias de produtos com baixa representatividade de fraudes.</p>
+<p>Este transformador primeiro calcula a porcentagem acumulada de fraudes
+por categoria de produto para identificar as categorias menos relevantes.
+Em seguida, no passo de transformação, agrupa essas categorias em um
+único valor “categorias_outros”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>percentage_cutoff</strong> (<em>int</em>) – O ponto de corte percentual acumulado de fraudes para considerar
+uma categoria como relevante.</p></li>
+<li><p><strong>top_n</strong> (<em>int</em>) – O índice a partir do qual as categorias serão selecionadas para
+agrupamento. Este é um parâmetro de corte adicional.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>least_frequent_categories</strong> (<em>list</em>) – Lista de nomes das categorias de produtos que foram
+identificadas durante o <code class="docutils literal notranslate"><span class="pre">fit</span></code> para serem agrupadas.
+O sufixo <code class="docutils literal notranslate"><span class="pre">_</span></code> indica que este atributo é aprendido
+e armazenado após o <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.CategoryGrouper.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.CategoryGrouper.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Aprende quais categorias de produtos agrupar com base na frequência de fraudes.</p>
+<p>Calcula a distribuição de fraudes por categoria e armazena uma lista
+daquelas que contribuem menos para o total de fraudes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – O DataFrame de features, que deve conter a coluna ‘categoria_produto’.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – A série do alvo, que deve conter a variável ‘fraude’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A própria instância do objeto ajustado (fitted).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.CategoryGrouper" title="fundamentos_engenharia_software.preprocessing.feature_engineering.CategoryGrouper">CategoryGrouper</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.CategoryGrouper.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.CategoryGrouper.transform" title="Link to this definition">¶</a></dt>
+<dd><p>Aplica o agrupamento de categorias ao DataFrame.</p>
+<p>Cria uma nova coluna ‘grupo_categorias’ onde as categorias menos
+frequentes (aprendidas no fit) são substituídas por
+‘categorias_outros’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>pd.DataFrame</em>) – O DataFrame de entrada para transformar.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>O DataFrame com a nova coluna ‘grupo_categorias’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.ColumnEncoder">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fundamentos_engenharia_software.preprocessing.feature_engineering.</span></span><span class="sig-name descname"><span class="pre">ColumnEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.ColumnEncoder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></p>
+<p>Codifica colunas categóricas (object) em valores numéricos usando LabelEncoder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoders</strong> (<em>dict</em>) – Dicionário que armazena os encoders ajustados para cada coluna.</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – Lista das colunas que foram identificadas como categóricas e codificadas.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.ColumnEncoder.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.ColumnEncoder.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Ajusta um LabelEncoder para cada coluna do tipo ‘object’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>pd.DataFrame</em>) – O DataFrame de onde as colunas categóricas serão identificadas e
+os encoders ajustados.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A própria instância do objeto ajustado (fitted).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.ColumnEncoder" title="fundamentos_engenharia_software.preprocessing.feature_engineering.ColumnEncoder">ColumnEncoder</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.ColumnEncoder.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.ColumnEncoder.transform" title="Link to this definition">¶</a></dt>
+<dd><p>Aplica o LabelEncoding às colunas usando os encoders já ajustados.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>pd.DataFrame</em>) – O DataFrame a ser transformado.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cópia do DataFrame com as colunas categóricas codificadas.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.CountryGrouper">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fundamentos_engenharia_software.preprocessing.feature_engineering.</span></span><span class="sig-name descname"><span class="pre">CountryGrouper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">countries_to_keep</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.CountryGrouper" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></p>
+<p>Agrupa países em ‘Outros’, mantendo apenas os especificados.</p>
+<p>Cria a coluna ‘paises_agrupados’, que contém o valor original da
+coluna ‘pais’ se ele estiver na lista de países a manter, ou ‘Outros’
+caso contrário.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>countries_to_keep</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Lista de códigos de países que não devem ser agrupados.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.CountryGrouper.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.CountryGrouper.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Fit vazio, sem aprendizado necessário</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.CountryGrouper" title="fundamentos_engenharia_software.preprocessing.feature_engineering.CountryGrouper"><code class="xref py py-class docutils literal notranslate"><span class="pre">CountryGrouper</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.CountryGrouper.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.CountryGrouper.transform" title="Link to this definition">¶</a></dt>
+<dd><p>Aplica o agrupamento de países.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>pd.DataFrame</em>) – DataFrame com a coluna ‘pais’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cópia do DataFrame com a nova coluna ‘paises_agrupados’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.DocumentFeatureCreator">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fundamentos_engenharia_software.preprocessing.feature_engineering.</span></span><span class="sig-name descname"><span class="pre">DocumentFeatureCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.DocumentFeatureCreator" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></p>
+<p>Cria novas features baseadas nas colunas de entrega de documentos.</p>
+<p>Adiciona duas novas colunas:
+1. ‘entrega_doc_2_nan’: Flag (1/0) que indica se ‘entrega_doc_2’ é nulo.
+2. ‘entrega_doc’: Flag que indica se algum dos documentos foi entregue.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.DocumentFeatureCreator.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.DocumentFeatureCreator.fit" title="Link to this definition">¶</a></dt>
+<dd><p>Fit vazio, sem aprendizado</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.DocumentFeatureCreator" title="fundamentos_engenharia_software.preprocessing.feature_engineering.DocumentFeatureCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentFeatureCreator</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.DocumentFeatureCreator.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.DocumentFeatureCreator.transform" title="Link to this definition">¶</a></dt>
+<dd><p>Aplica a criação das features de documentos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>pd.DataFrame</em>) – DataFrame com as colunas ‘entrega_doc_1’, ‘entrega_doc_2’, e ‘entrega_doc_3’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cópia do DataFrame com as duas novas colunas de features.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.FeatureEngineer">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fundamentos_engenharia_software.preprocessing.feature_engineering.</span></span><span class="sig-name descname"><span class="pre">FeatureEngineer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.FeatureEngineer" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Orquestra o pipeline completo de engenharia de features.</p>
+<p>Esta classe encapsula todo o processo:
+- Leitura dos dados brutos de um arquivo de entrada.
+- Execução de um pipeline de transformações.
+- Salvamento do DataFrame processado em um arquivo de saída.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_path</strong> (<em>str</em>) – O caminho para o arquivo de dados brutos (ex: .xlsx).</p></li>
+<li><p><strong>output_path</strong> (<em>str</em>) – O caminho onde o arquivo CSV processado será salvo.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – DataFrame contendo os dados brutos lidos.</p></li>
+<li><p><strong>processed_data</strong> (<em>pd.DataFrame</em>) – DataFrame contendo os dados após a aplicação do pipeline.</p></li>
+<li><p><strong>feature_pipeline</strong> (<em>Pipeline</em>) – O objeto de pipeline do scikit-learn contendo todas as etapas
+de transformação.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.FeatureEngineer.read_raw_data">
+<span class="sig-name descname"><span class="pre">read_raw_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.FeatureEngineer.read_raw_data" title="Link to this definition">¶</a></dt>
+<dd><p>Lê os dados brutos do input_path e os armazena no atributo data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.FeatureEngineer.run_feature_engineer">
+<span class="sig-name descname"><span class="pre">run_feature_engineer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.FeatureEngineer.run_feature_engineer" title="Link to this definition">¶</a></dt>
+<dd><p>Executa o fluxo completo de engenharia de features.</p>
+<p>Este método orquestra a leitura, a separação de X e y, a aplicação
+do pipeline de fit_transform, e o salvamento dos resultados.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fundamentos_engenharia_software.preprocessing.feature_engineering.FeatureEngineer.save_feature_engineer_results">
+<span class="sig-name descname"><span class="pre">save_feature_engineer_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fundamentos_engenharia_software.preprocessing.feature_engineering.FeatureEngineer.save_feature_engineer_results" title="Link to this definition">¶</a></dt>
+<dd><p>Salva o DataFrame processado (processed_data) no output_path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Fundamentos de Engenharia de Software</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Módulo de Pré-Processamento</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-fundamentos_engenharia_software.preprocessing.feature_engineering">Engenharia de Features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="training_api.html">Módulo de Treinamento do Modelo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation_api.html">Módulo de Avaliação de Modelo</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Fundamentos de Engenharia de Software documentation</a></li>
+      <li>Next: <a href="training_api.html" title="next chapter">Módulo de Treinamento do Modelo</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Vanessa Gaigher.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.0.4</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/preprocessing_api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
