@@ -1,10 +1,11 @@
 """
-Módulo de treinamento do modelo.
+Módulo responsável pelo treinamento do modelo de classificação.
 
-Este script é responsável por treinar o modelo de classificação.
-Ele carrega os dados de treino pré-processados, treina um modelo
-de Árvore de Decisão com hiperparâmetros definidos e salva o artefato
-treinado para uso posterior na etapa de avaliação.
+Este módulo carrega os dados de treino já pré-processados, seleciona as
+principais variáveis preditoras definidas em ``TOP_FEATURES`` e treina um
+modelo de Árvore de Decisão com hiperparâmetros fixos. Após o ajuste, o
+modelo treinado é serializado e salvo em disco para uso posterior na
+etapa de avaliação.
 """
 
 import logging
@@ -23,14 +24,33 @@ def train_model(
     x_train_imputed_data_path: str, y_train_data_path: str, model_path: str
 ) -> None:
     """
-    Treina o modelo de árvore de decisão e o salva em disco.
+    Treina um modelo de Árvore de Decisão e salva o artefato resultante.
 
-    Esta função executa os seguintes passos:
-    1. Carrega os conjuntos de dados de treino (features e target).
-    2. Seleciona as features mais importantes (definidas em TOP_FEATURES).
-    3. Instancia um modelo de Árvore de Decisão com hiperparâmetros pré-definidos.
-    4. Treina o modelo com os dados de treino.
-    5. Salva o objeto do modelo treinado no caminho especificado em MODEL_PATH.
+    O processo envolve:
+
+    * carregar os conjuntos de treino (features e target);
+    * selecionar as variáveis definidas em ``TOP_FEATURES``;
+    * instanciar o classificador com hiperparâmetros pré-definidos;
+    * ajustar o modelo aos dados;
+    * serializar o modelo treinado e salvá-lo em ``model_path``.
+
+    :param str x_train_imputed_data_path:
+        Caminho para o arquivo CSV contendo as features de treino já imputadas.
+
+    :param str y_train_data_path:
+        Caminho para o arquivo CSV contendo a variável target de treino.
+
+    :param str model_path:
+        Caminho onde o artefato do modelo treinado será salvo (formato ``.joblib``).
+
+    :raises FileNotFoundError:
+        Caso algum dos arquivos de treino não seja encontrado.
+
+    :raises Exception:
+        Para quaisquer erros inesperados durante o processo de treinamento.
+
+    :returns:
+        ``None``. O modelo é persistido em disco.
     """
     try:
         logger.info("Iniciando o treinamento do modelo.")

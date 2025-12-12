@@ -60,3 +60,8 @@ good-names = [
 
 
 
+
+[tool.poetry.group.dev.dependencies]
+sphinx = "^9.0.4"
+sphinx-autodoc-typehints = "^3.6.0"
+
