@@ -37,7 +37,7 @@ jobs:
         run: poetry install
 
       - name: 6. Run Black code formatter
-        run: poetry run black --check
+        run: poetry run black src/fundamentos_engenharia_software --check
 
       - name: 7. Run Pylint
         run: poetry run pylint src/fundamentos_engenharia_software tests --fail-under=8.0
